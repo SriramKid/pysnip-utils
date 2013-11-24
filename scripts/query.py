@@ -15,7 +15,7 @@ INFO_KEYVALUE = '\\{key}\\{value}'
 PLAYER_STRING = '{score} {ping} "{name}" {team}\n'
 
 def makeValid(key):
-	k1 = sub('[\;"]', '', key)
+	k1 = sub(r'[\\\;"]', '', key)
 	if len(k1) >= 64:
 		return k1[:64]
 	return k1
