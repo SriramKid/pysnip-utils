@@ -1,6 +1,5 @@
 """
-List all players in a server, including their ip, rights and id.
-
+List all players in a server.
 Copyright (c) 2013 learn_more
 See the file license.txt or http://opensource.org/licenses/MIT for copying permission.
 """

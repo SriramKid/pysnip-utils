@@ -1,9 +1,9 @@
 """
 Command helper.
-Lists all commands available to you (permission based).
-
 Copyright (c) 2013 learn_more
 See the file license.txt or http://opensource.org/licenses/MIT for copying permission.
+
+Lists all commands available to you (permission based).
 """
 
 from commands import add, admin, commands as cmdlist, aliases as aliaslist

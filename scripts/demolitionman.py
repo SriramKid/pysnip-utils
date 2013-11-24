@@ -1,9 +1,9 @@
 """
 Demolition man script.
-Restocks the user when reloading / throwing a nade.
-
 Copyright (c) 2013 learn_more
 See the file license.txt or http://opensource.org/licenses/MIT for copying permission.
+
+Restocks the user when reloading / throwing a nade.
 """
 
 from commands import add, admin

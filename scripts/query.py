@@ -1,10 +1,10 @@
 """
 Query support.
-Allows server browsers and management tools to query the server for info.
-The protocol used is the warsow version of the quake query protocol.
-
 Copyright (c) 2013 learn_more
 See the file license.txt or http://opensource.org/licenses/MIT for copying permission.
+
+Allows server browsers and management tools to query the server for info.
+The protocol used is the warsow version of the quake query protocol.
 """
 
 from re import sub

@@ -1,10 +1,24 @@
 """
 Minefield map extension.
+Copyright (c) 2013 learn_more
+See the file license.txt or http://opensource.org/licenses/MIT for copying permission.
+
 Allows mappers to specify the map bounds, outside of which players will trip mines.
 Breaking blocks (when standing close to the field) also triggers a mine.
 
-Copyright (c) 2013 learn_more
-See the file license.txt or http://opensource.org/licenses/MIT for copying permission.
+example extension from mapname.txt:
+
+extensions = {
+	'minefields' : [
+		{
+			'border' : 1,
+			'left' : 59,
+			'top' : 154,
+			'right' : 451,
+			'bottom' : 355,
+		}
+	]
+}
 """
 
 from pyspades.world import Grenade
