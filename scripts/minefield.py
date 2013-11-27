@@ -21,6 +21,8 @@ extensions = {
 }
 """
 
+MINEFIELD_VERSION = 1.0
+
 from pyspades.world import Grenade
 from pyspades.server import grenade_packet
 from pyspades.common import Vertex3
@@ -103,6 +105,7 @@ def apply_script(protocol, connection, config):
 	class MineProtocol(protocol):
 		mines_enabled = False
 		minefields = []
+		minefield_version = MINEFIELD_VERSION
 		def on_map_change(self, map):
 			self.minefields = []
 			self.mines_enabled = False
