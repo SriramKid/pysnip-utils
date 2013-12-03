@@ -10,12 +10,18 @@ example extension from mapname.txt:
 
 extensions = {
 	'minefields' : [
+		#this minefield defines the border:
 		{
 			'border' : 1,
 			'left' : 59,
 			'top' : 154,
 			'right' : 451,
 			'bottom' : 355,
+		},
+		#this specifies an additional minefield (and shows a simpler syntax)
+		{
+			'area' : (183, 126, 224, 233),	#top left
+			'height' : 60	#this specifies until which block mines are enabled (so you can build over it)
 		}
 	]
 }
@@ -24,7 +30,6 @@ Support thread: http://buildandshoot.com/viewtopic.php?f=19&t=8089
 Script location: https://github.com/learn-more/pysnip/blob/master/scripts/minefield.py
 """
 #todo: reset intel in minefield
-#todo: black decals on level 63
 
 MINEFIELD_VERSION = 1.5
 
