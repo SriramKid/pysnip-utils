@@ -29,10 +29,11 @@ Script location: https://github.com/learn-more/pysnip/blob/master/scripts/minefi
 MINEFIELD_VERSION = 1.5
 
 from pyspades.world import Grenade
-from pyspades.server import grenade_packet
-from pyspades.common import Vertex3
+from pyspades.server import grenade_packet, block_action, set_color
+from pyspades.common import Vertex3, make_color
 from pyspades.collision import collision_3d
-from pyspades.constants import DESTROY_BLOCK, SPADE_DESTROY
+from pyspades.constants import DESTROY_BLOCK, SPADE_DESTROY, BUILD_BLOCK
+from pyspades.contained import BlockAction, SetColor
 from twisted.internet.reactor import callLater
 from random import choice
 
@@ -60,6 +61,7 @@ KILL_MESSAGES = [
 MINEFIELD_TIP = 'Be carefull, there are mines in this map!'
 MINEFIELD_MOTD = 'Be carefull for minefields!'
 MINEFIELD_HELP = 'There are mines in this map!'
+MINEFIELD_MINE_ENT = 'mine'
 DEBUG_MINEFIELD = False
 
 class Minefield:
@@ -89,6 +91,38 @@ class Minefield:
 			return x >= self.left and x <= self.right and y >= self.top and y <= self.bottom
 		return False
 
+	def singleBlock(self, protocol, x, y, z, color):
+		if not protocol.map.get_solid(x, y, z):
+			z += 1
+		if protocol.map.get_color(x, y, z) == color:
+			return
+		block_action.x = x
+		block_action.y = y
+		block_action.z = z
+		block_action.player_id = 32
+		protocol.map.set_point(x, y, z, color)
+		block_action.value = DESTROY_BLOCK
+		protocol.send_contained(block_action, save = True)
+		block_action.value = BUILD_BLOCK
+		protocol.send_contained(block_action, save = True)
+
+	def updateColor(self, protocol, color):
+		set_color.value = make_color(*color)
+		set_color.player_id = 32
+		protocol.send_contained(set_color, save = True)
+		return color
+
+	def spawnDecal(self, connection, x, y, z):
+		protocol = connection.protocol
+		c = self.updateColor(protocol, (0,0,0))
+		self.singleBlock(protocol, x, y, z, c)
+		c = self.updateColor(protocol, (50,50,50))
+		for cc in ((0,1), (1,0), (-1,0), (0,-1)):
+			self.singleBlock(protocol, x + cc[0], y + cc[1], z, c)
+		c = self.updateColor(protocol, (100,100,100))
+		for cc in ((1,1), (1,-1), (-1,1), (-1,-1)):
+			self.singleBlock(protocol, x + cc[0], y + cc[1], z, c)
+
 	def spawnNade(self, connection, x, y, z):
 		protocol = connection.protocol
 		fuse = 0.1
@@ -96,12 +130,14 @@ class Minefield:
 		orientation = None
 		velocity = Vertex3(0, 0, 0)
 		grenade = protocol.world.create_object(Grenade, fuse, position, orientation, velocity, connection.grenade_exploded)
-		grenade.name = 'mine'
+		grenade.name = MINEFIELD_MINE_ENT
 		grenade_packet.value = grenade.fuse
 		grenade_packet.player_id = 32
 		grenade_packet.position = position.get()
 		grenade_packet.velocity = velocity.get()
 		protocol.send_contained(grenade_packet)
+		if z >= 61.5:
+			callLater(fuse + 0.1, self.spawnDecal, connection, x, y, z)
 		if DEBUG_MINEFIELD:
 			print 'Spawning nade at', position
 
@@ -134,7 +170,7 @@ def apply_script(protocol, connection, config):
 			return connection.on_block_destroy(self, x, y, z, mode)
 		
 		def on_kill(self, killer, type, grenade):
-			if grenade and grenade.name == 'mine':
+			if grenade and grenade.name == MINEFIELD_MINE_ENT:
 				self.protocol.mine_kills += 1
 				message = choice(KILL_MESSAGES).format(player = self.name, mine_kills = self.protocol.mine_kills)
 				self.protocol.send_chat(message, global_message = True)
